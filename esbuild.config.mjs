@@ -13,9 +13,8 @@ const dependencies = {
   ...pkg.peerDependencies,
 };
 const ctx = await context({
-  absWorkingDir: path.join(process.cwd(), "app/javascript"),
   bundle: true,
-  entryPoints: [path.resolve(__dirname,'app/javascript/src/**/*.*')],
+  entryPoints: [path.resolve(__dirname,'app/javascript/src/entrypoints/*.*')],
   external: Object.keys(dependencies),
   format: 'esm',
   loader: {
@@ -35,9 +34,7 @@ const ctx = await context({
   target: ['chrome125', 'firefox100', 'safari15'],
 })
 
-const argv = process.argv.slice(2);
-
-if (argv[0] === '--watch') {
+if (process.argv.includes('--watch')) {
   ctx.watch().then(() => {
     console.log('Watching...');
   }).catch((err) => {

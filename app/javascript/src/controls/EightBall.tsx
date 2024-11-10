@@ -1,12 +1,19 @@
 import { Canvas } from "@react-three/fiber";
+import { levaStore, LevaStoreProvider, useStoreContext } from "leva";
+import { useInputContext, Components } from "leva/plugin";
 import React, { useRef } from "react";
 import * as THREE from "three";
-import { EightBallProps } from "../entrypoints/application";
 
+const { Row } = Components
 
-export const EightBall = ({ value }: EightBallProps) => {
+export type EightBallProps = {
+  orientation: THREE.Euler
+}
+
+export const EightBall = () => {
   const pivotRef = useRef<THREE.Mesh>(null);
   const compassTexture = new THREE.TextureLoader().load( '/rotation_guide.png' );
+  const { displayValue, value, onUpdate, settings } = useInputContext<EightBallProps>()
 
   let uniforms = {
     "compassTexture": { value: compassTexture },
@@ -43,19 +50,25 @@ export const EightBall = ({ value }: EightBallProps) => {
       }
   `
   }
-
   return (
-    <>
-    <Canvas>
-      <mesh
-        ref={ pivotRef }
-        position={ new THREE.Vector3(0, 0, -1) }
-        scale={ new THREE.Vector3(2, 2, 2) }
-        material={ new THREE.ShaderMaterial({ uniforms, vertexShader: vertexShader(), fragmentShader: compassShader() }) }
-      >
-        <sphereGeometry  />
-      </mesh>
-    </Canvas>
-    </>
+    <mesh
+      // ref={ pivotRef }
+      position={ new THREE.Vector3(0, 0, -1) }
+      rotation={(displayValue as EightBallProps).orientation}
+      scale={ new THREE.Vector3(2, 2, 2) }
+      material={ new THREE.ShaderMaterial({ uniforms, vertexShader: vertexShader(), fragmentShader: compassShader() }) }
+    >
+      <sphereGeometry  />
+    </mesh>)
+}
+
+
+export const EightBallView = () => {
+  return (
+    <Row>
+      <Canvas>
+        <EightBall />
+      </Canvas>
+    </Row>
   )
 }
